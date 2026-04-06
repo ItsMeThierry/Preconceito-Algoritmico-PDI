@@ -1,43 +1,48 @@
 import cv2
 import os
+import json
+from deepface import DeepFace
 
-detector = cv2.FaceDetectorYN.create(
-    model='face_detection_yunet_2023mar_int8.onnx', 
-    config="", 
-    input_size=(320, 320), # Tamanho da imagem de rosto
-    score_threshold=0.85, # Confiança mínima, o ideal seria entre (0.6-0.9)
-    nms_threshold=0.3, # (0.3-0.5)
-    top_k=5000, # Número máximo de rostos detectado
-    backend_id=cv2.dnn.DNN_BACKEND_OPENCV,
-    target_id=cv2.dnn.DNN_TARGET_CPU # Executa o modelo na CPU
-)
+def analyze_faces(img):
+    try:
+        # Detecta as faces e extrai uma analise delas
+        faces_data = DeepFace.analyze(img_path=img, actions=['age','gender','race'],detector_backend='mtcnn',enforce_detection=False)
+        print(f"Detectado {len(faces_data)} faces")
 
-def extract_faces(img):
+        # Processa os dados do resultado em (face_img, data)
+        collection = list()
+        print("Processando os dados das faces...")
 
-    # Definindo o tamanho da imagem no detector
-    height, width = img.shape[:2]
-    detector.setInputSize((width, height))
+        for data in faces_data:
+            x = data['region']['x']
+            y = data['region']['y']
+            w = data['region']['w']
+            h = data['region']['h']
 
-    # Detecta faces
-    print("Detectando faces...")
-    faces = detector.detect(img)
+            # Região detectada da face
+            face_region = img[y:y+h, x:x+w]
 
-    collection = list()
+            # Dados importantes do resultado
+            face_data = {
+                'idade': data['age'],
+                'confianca_face': data['face_confidence'],
+                'prob_genero': {'homem': float(data['gender']['Man']), 'mulher': float(data['gender']['Woman'])},
+                'prob_etnia': {
+                    'asiatico': float(data['race']['asian']),
+                    'indiano': float(data['race']['indian']),
+                    'negro': float(data['race']['black']),
+                    'branco': float(data['race']['white']),
+                    'oriente_medio': float(data['race']['middle eastern']),
+                    'latino': float(data['race']['latino hispanic'])
+                }
+            }
 
-    # Extrai as faces
-    for face in faces[1]:
-        x, y, w ,h = map(int, face[:4])
-        confianca = face[14]
+            collection.append((face_region, face_data))
 
-        print(f"Extraindo face x = {x}, y = {y}, w = {w}, h = {h}, confianca = {confianca}")
-        
-        face_roi = img[y:y+h, x:x+w]
-        face_rgb = cv2.cvtColor(face_roi, cv2.COLOR_BGR2RGB)
+        return collection
 
-        collection.append(face_rgb)
-
-    return collection
-        
+    except Exception as e:
+        raise Exception(e)
 
 def main():
     
@@ -62,17 +67,25 @@ def main():
     try:
         img = cv2.imread('imagens/' + path_name + extensao)
 
-        # Extrai todas as faces da imagem
-        faces_img = extract_faces(img)
+        # Analise as faces das imagens e coleta dados sobre elas
+        result = analyze_faces(img)
 
         if not os.path.exists("output"):
             os.makedirs("output")
 
-        # Salva todas as faces em imagens separadas
+        # Para cada face salva a imagem e os dados, separadamente
         i = 0
-        for face in faces_img:
-            cv2.imwrite(f"output/{path_name}_face_{i}.jpg", face)
+        print("Salvando as imagens e os dados em output...")
+        for (face_img, data) in result:
+            # Salva uma imagem da face
+            cv2.imwrite(f"output/{path_name}_face_{i}.jpg", face_img)
+
+            # Salva os dados da face
+            with open(f"output/{path_name}_face_{i}.json", 'w') as f:
+                json.dump(data, f)
+        
             i += 1
+
     except Exception as e:
         print(e)
 
