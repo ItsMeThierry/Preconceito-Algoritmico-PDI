@@ -1,0 +1,18 @@
+tipo,categoria,quantidade
+genero_real,Homem,12391
+genero_real,Mulher,11314
+etnia_real,Branco,10078
+etnia_real,Indiano,3975
+etnia_real,Outros,1692
+etnia_real,Negro,4526
+etnia_real,Asiático,3434
+etnia_pred,Asiático,4909
+etnia_pred,Branco,9873
+etnia_pred,Oriente Médio,1557
+etnia_pred,Negro,3881
+etnia_pred,Latino/Hispânico,2511
+etnia_pred,Indiano,974
+faixa_etaria,60+,2395
+faixa_etaria,21-40,12122
+faixa_etaria,0-20,4877
+faixa_etaria,41-60,4311

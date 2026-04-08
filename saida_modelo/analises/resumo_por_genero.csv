@@ -1,0 +1,3 @@
+grupo,quantidade,erro_medio_absoluto_idade,erro_medio_assinado_idade,acuracia_genero,acuracia_etnia,confianca_media
+Homem,12391,12.1625,-3.1077,94.609,62.9973,
+Mulher,11314,12.0546,1.1437,63.4347,61.6846,

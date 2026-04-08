@@ -1,0 +1,6 @@
+grupo,quantidade,erro_medio_absoluto_idade,erro_medio_assinado_idade,acuracia_genero,acuracia_etnia,confianca_media
+Branco,10078,14.0401,-4.2336,83.3003,77.3864,
+Negro,4526,8.692,-2.9837,74.8564,75.3425,
+Asiático,3434,13.4796,4.8407,73.9371,81.3046,
+Indiano,3975,10.5701,0.8005,81.7107,19.7233,
+Outros,1692,10.6087,6.3818,78.6052,0,

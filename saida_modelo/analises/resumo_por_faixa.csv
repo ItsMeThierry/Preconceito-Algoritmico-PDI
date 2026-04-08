@@ -1,0 +1,5 @@
+grupo,quantidade,erro_medio_absoluto_idade,erro_medio_assinado_idade,acuracia_genero,acuracia_etnia,confianca_media
+0-20,4877,19.7745,19.7732,66.1062,56.6537,
+21-40,12122,4.5802,1.0286,83.4268,61.9205,
+41-60,4311,14.2002,-14.0476,87.1955,64.463,
+60+,2395,30.8614,-30.8605,75.3236,72.5261,
