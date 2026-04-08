@@ -1,0 +1,21 @@
+arquivo,idade_real,idade_pred,erro_idade_signed,erro_idade_abs,genero_real,genero_pred,etnia_real,etnia_pred
+111_1_0_20170120134646399.jpg.chip.jpg,111,30,-81,81,Mulher,Homem,Branco,Asiático
+105_1_0_20170112213021902.jpg.chip.jpg,105,25,-80,80,Mulher,Homem,Branco,Branco
+116_1_0_20170120134921760.jpg.chip.jpg,116,40,-76,76,Mulher,Homem,Branco,Branco
+115_1_0_20170120134725990.jpg.chip.jpg,115,40,-75,75,Mulher,Homem,Branco,Branco
+99_1_0_20170110182052119.jpg.chip.jpg,99,24,-75,75,Mulher,Homem,Branco,Oriente Médio
+110_1_1_20170110155201038.jpg.chip.jpg,110,37,-73,73,Mulher,Homem,Negro,Negro
+110_1_0_20170120134701015.jpg.chip.jpg,110,37,-73,73,Mulher,Homem,Branco,Asiático
+100_1_0_20170119212053665.jpg.chip.jpg,100,27,-73,73,Mulher,Homem,Branco,Branco
+110_1_3_20170110155139762.jpg.chip.jpg,110,41,-69,69,Mulher,Homem,Indiano,Asiático
+110_0_0_20170112213500903.jpg.chip.jpg,110,41,-69,69,Homem,Homem,Branco,Branco
+101_0_0_20170112213500903.jpg.chip.jpg,101,33,-68,68,Homem,Homem,Branco,Oriente Médio
+115_1_0_20170120134725991.jpg.chip.jpg,115,48,-67,67,Mulher,Homem,Branco,Branco
+115_1_1_20170112213257263.jpg.chip.jpg,115,49,-66,66,Mulher,Homem,Negro,Negro
+110_0_2_20170112223734562.jpg.chip.jpg,110,44,-66,66,Homem,Homem,Asiático,Oriente Médio
+90_0_1_20170117194324750.jpg.chip.jpg,90,25,-65,65,Homem,Homem,Negro,Indiano
+90_0_0_20170111210338948.jpg.chip.jpg,90,26,-64,64,Homem,Homem,Branco,Branco
+116_1_2_20170112220255503.jpg.chip.jpg,116,52,-64,64,Mulher,Homem,Asiático,Asiático
+90_0_3_20170111210252274.jpg.chip.jpg,90,28,-62,62,Homem,Homem,Indiano,Indiano
+99_1_0_20170113013141679.jpg.chip.jpg,99,38,-61,61,Mulher,Homem,Branco,Branco
+88_1_0_20170120133811095.jpg.chip.jpg,88,27,-61,61,Mulher,Homem,Branco,Branco

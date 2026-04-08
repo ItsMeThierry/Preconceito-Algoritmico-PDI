@@ -578,6 +578,205 @@ Gráficos principais recomendados para apresentação:
         f.write(texto)
 
 
+def salvar_analise_idade_por_etnia(registros):
+    """
+    Destaca especificamente o erro de idade por etnia,
+    tanto absoluto quanto assinado.
+    """
+    grupos = defaultdict(list)
+    for r in registros:
+        grupos[r["etnia_real"]].append(r)
+
+    etnias = ordenar_categorias_presentes(list(grupos.keys()), ORDEM_ETNIA)
+
+    linhas = []
+    erros_abs = []
+    erros_signed = []
+
+    print("\n" + "=" * 70)
+    print("ERRO DE IDADE POR ETNIA")
+    print("=" * 70)
+
+    for etnia in etnias:
+        itens = grupos[etnia]
+        erro_abs = safe_mean([r["erro_idade"] for r in itens])
+        erro_signed = safe_mean([r["erro_idade_signed"] for r in itens])
+
+        print(
+            f"{etnia}: erro abs médio = {erro_abs:.2f} | erro signed médio = {erro_signed:.2f}"
+        )
+
+        linhas.append([etnia, len(itens), round(erro_abs, 4), round(erro_signed, 4)])
+        erros_abs.append(erro_abs)
+        erros_signed.append(erro_signed)
+
+    salvar_csv(
+        os.path.join(OUTPUT_DIR, "idade_por_etnia.csv"),
+        [
+            "etnia_real",
+            "quantidade",
+            "erro_medio_absoluto_idade",
+            "erro_medio_assinado_idade",
+        ],
+        linhas,
+    )
+
+    plt.figure(figsize=(8, 4))
+    plt.bar(etnias, erros_abs)
+    plt.title("Erro Médio Absoluto de Idade por Etnia")
+    plt.ylabel("Erro Médio Absoluto")
+    plt.tight_layout()
+    plt.savefig(os.path.join(OUTPUT_DIR, "idade_por_etnia_abs.png"))
+    plt.close()
+
+    plt.figure(figsize=(8, 4))
+    plt.bar(etnias, erros_signed)
+    plt.axhline(0, linestyle="--")
+    plt.title("Erro Médio Assinado de Idade por Etnia")
+    plt.ylabel("Erro Médio (Predito - Real)")
+    plt.tight_layout()
+    plt.savefig(os.path.join(OUTPUT_DIR, "idade_por_etnia_signed.png"))
+    plt.close()
+
+
+def salvar_erro_genero_por_etnia(registros):
+    """
+    Calcula explicitamente a taxa de erro de gênero por etnia.
+    """
+    grupos = defaultdict(list)
+    for r in registros:
+        grupos[r["etnia_real"]].append(r)
+
+    etnias = ordenar_categorias_presentes(list(grupos.keys()), ORDEM_ETNIA)
+
+    linhas = []
+    taxas_erro = []
+    taxas_acerto = []
+
+    print("\n" + "=" * 70)
+    print("ERRO DE GÊNERO POR ETNIA")
+    print("=" * 70)
+
+    for etnia in etnias:
+        itens = grupos[etnia]
+        acerto = 100 * safe_mean([1 if r["acerto_genero"] else 0 for r in itens])
+        erro = 100 - acerto
+
+        print(f"{etnia}: acerto gênero = {acerto:.2f}% | erro gênero = {erro:.2f}%")
+
+        linhas.append([etnia, len(itens), round(acerto, 4), round(erro, 4)])
+        taxas_acerto.append(acerto)
+        taxas_erro.append(erro)
+
+    salvar_csv(
+        os.path.join(OUTPUT_DIR, "erro_genero_por_etnia.csv"),
+        ["etnia_real", "quantidade", "acuracia_genero", "taxa_erro_genero"],
+        linhas,
+    )
+
+    plt.figure(figsize=(8, 4))
+    plt.bar(etnias, taxas_acerto)
+    plt.title("Acurácia de Gênero por Etnia")
+    plt.ylabel("Acurácia (%)")
+    plt.tight_layout()
+    plt.savefig(os.path.join(OUTPUT_DIR, "acuracia_genero_por_etnia_destacado.png"))
+    plt.close()
+
+    plt.figure(figsize=(8, 4))
+    plt.bar(etnias, taxas_erro)
+    plt.title("Taxa de Erro de Gênero por Etnia")
+    plt.ylabel("Erro (%)")
+    plt.tight_layout()
+    plt.savefig(os.path.join(OUTPUT_DIR, "erro_genero_por_etnia.png"))
+    plt.close()
+
+
+def salvar_top_grotescos_idade_signed(registros, top_n=20):
+    """
+    Separa os casos mais grotescos de superestimação e subestimação de idade.
+    """
+    positivos = sorted(registros, key=lambda r: r["erro_idade_signed"], reverse=True)[
+        :top_n
+    ]
+    negativos = sorted(registros, key=lambda r: r["erro_idade_signed"])[:top_n]
+
+    print("\n" + "=" * 70)
+    print("TOP GROTESCOS DE IDADE")
+    print("=" * 70)
+
+    print("\nTop 10 superestimações de idade:")
+    for r in positivos[:10]:
+        print(
+            f"{r['arquivo']} | real={r['idade_real']} | pred={r['idade_pred']} | "
+            f"erro={r['erro_idade_signed']} | gênero={r['genero_real']} | etnia={r['etnia_real']}"
+        )
+
+    print("\nTop 10 subestimações de idade:")
+    for r in negativos[:10]:
+        print(
+            f"{r['arquivo']} | real={r['idade_real']} | pred={r['idade_pred']} | "
+            f"erro={r['erro_idade_signed']} | gênero={r['genero_real']} | etnia={r['etnia_real']}"
+        )
+
+    salvar_csv(
+        os.path.join(OUTPUT_DIR, "top_superestimacoes_idade.csv"),
+        [
+            "arquivo",
+            "idade_real",
+            "idade_pred",
+            "erro_idade_signed",
+            "erro_idade_abs",
+            "genero_real",
+            "genero_pred",
+            "etnia_real",
+            "etnia_pred",
+        ],
+        [
+            [
+                r["arquivo"],
+                r["idade_real"],
+                r["idade_pred"],
+                r["erro_idade_signed"],
+                r["erro_idade"],
+                r["genero_real"],
+                r["genero_pred"],
+                r["etnia_real"],
+                r["etnia_pred"],
+            ]
+            for r in positivos
+        ],
+    )
+
+    salvar_csv(
+        os.path.join(OUTPUT_DIR, "top_subestimacoes_idade.csv"),
+        [
+            "arquivo",
+            "idade_real",
+            "idade_pred",
+            "erro_idade_signed",
+            "erro_idade_abs",
+            "genero_real",
+            "genero_pred",
+            "etnia_real",
+            "etnia_pred",
+        ],
+        [
+            [
+                r["arquivo"],
+                r["idade_real"],
+                r["idade_pred"],
+                r["erro_idade_signed"],
+                r["erro_idade"],
+                r["genero_real"],
+                r["genero_pred"],
+                r["etnia_real"],
+                r["etnia_pred"],
+            ]
+            for r in negativos
+        ],
+    )
+
+
 def main():
     ensure_output_dir()
     registros = carregar_registros()
@@ -617,6 +816,9 @@ def main():
 
     salvar_casos_grotescos(registros)
     salvar_resumo_textual()
+    salvar_analise_idade_por_etnia(registros)
+    salvar_erro_genero_por_etnia(registros)
+    salvar_top_grotescos_idade_signed(registros, top_n=20)
 
     print("\n" + "=" * 70)
     print("ANÁLISE FINALIZADA")
